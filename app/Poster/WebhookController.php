@@ -33,19 +33,19 @@ class WebhookController
         'category.removed' => PosterCategoryRemoved::class,
         'category.added' => PosterCategoryAdded::class,
         'category.changed' => PosterCategoryChanged::class,
-        'category.restored' => PosterCategoryRestored::class,
+        'category.recovered' => PosterCategoryRestored::class,
 
         'product' => PosterProductActionPerformed::class,
         'product.removed' => PosterProductRemoved::class,
         'product.added' => PosterProductAdded::class,
         'product.changed' => PosterProductChanged::class,
-        'product.restored' => PosterProductRestored::class,
+        'product.recovered' => PosterProductRestored::class,
 
         'dish' => PosterDishActionPerformed::class,
         'dish.removed' => PosterDishRemoved::class,
         'dish.added' => PosterDishAdded::class,
         'dish.changed' => PosterDishChanged::class,
-        'dish.restored' => PosterDishRestored::class,
+        'dish.recovered' => PosterDishRestored::class,
 
     ];
 
@@ -67,12 +67,12 @@ class WebhookController
             $params = json_decode($request->getContent(), true);
             event(new PosterWebhookReceived($params));
 
-            $specificEvent = $this->events["{$params['object']}.{$params['action']}"];
+            $specificEvent = $this->events["{$params['object']}.{$params['action']}"] ?? null;
             if ($specificEvent) {
                 event(new $specificEvent($params));
             }
 
-            $commonEvent = $this->events[$params['object']];
+            $commonEvent = $this->events[$params['object']] ?? null;
 
             if($commonEvent) {
                 event(new $commonEvent($params));

@@ -12,12 +12,12 @@ class PosterWebhookEvent {
     protected $data;
     public function __construct($params) {
         $this->params = $params;
-        $this->object = $params['object'];
-        $this->object_id = $params['object_id'];
-        $this->action = $params['action'];
-        $this->account = $params['account'];
-        $this->verify = $params['verify'];
-        $this->data = $params['data'];
+        $this->object = $params['object'] ?? null;
+        $this->object_id = $params['object_id'] ?? null;
+        $this->action = $params['action'] ?? null;
+        $this->account = $params['account'] ?? null;
+        $this->verify = $params['verify'] ?? null;
+        $this->data = $params['data'] ?? null;
     }
 
     public function getParams() {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c35fa355050a44cfe67b14a3c5f03535",
+    "content-hash": "d9788ce1224e6a80bb8c233eea4e2d61",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1017,6 +1017,59 @@
                 }
             ],
             "time": "2023-04-17T16:11:26+00:00"
+        },
+        {
+            "name": "kagatan/monolog-telegram",
+            "version": "v1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kagatan/monolog-telegram.git",
+                "reference": "6a4a11bd53c9e130db362dce03cf4bd9aa1eb822"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kagatan/monolog-telegram/zipball/6a4a11bd53c9e130db362dce03cf4bd9aa1eb822",
+                "reference": "6a4a11bd53c9e130db362dce03cf4bd9aa1eb822",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "monolog/monolog": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kagatan\\MonologTelegram\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kagatan",
+                    "email": "stupakovmax@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A handler for Monolog that sends messages to Telegram Channels. Laravel",
+            "homepage": "https://github.com/kagatan/monolog-telegram",
+            "keywords": [
+                "bots",
+                "channels",
+                "laravel",
+                "log",
+                "logging",
+                "monolog",
+                "monolog-telegram",
+                "telegram"
+            ],
+            "support": {
+                "issues": "https://github.com/kagatan/monolog-telegram/issues",
+                "source": "https://github.com/kagatan/monolog-telegram/tree/v1.4"
+            },
+            "time": "2021-03-21T15:59:47+00:00"
         },
         {
             "name": "laravel/framework",
