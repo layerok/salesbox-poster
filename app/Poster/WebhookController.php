@@ -55,7 +55,6 @@ class WebhookController
         $content = $request->getContent();
         //$decoded = json_decode($content, true);
 
-        // todo: don't forget to delete 'dev' param
         $isVerified = PosterApi::auth()->verifyWebHook($content);
 
         if (!$isVerified) {
