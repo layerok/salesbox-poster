@@ -35,7 +35,7 @@
         .dataTables_paginate {
             display: flex;
             justify-content: flex-end;
-            width: 297px;
+            width: 376px;
         }
 
         .paginate_button {
@@ -69,14 +69,14 @@
     <p class="fw6 f5 lh-copy">Тести</p>
     <p class="mt2 f7">
         @if(count($products) > 0)
-            ❌ Товари не синхронізовані
+            ⚠️Товари не синхронізовані
         @else
             ✅ Товари синхронізовані
         @endif
     </p>
     <p class="mt2 f7">
         @if(count($categories) > 0)
-            ❌ Категорії не синхронізовані
+            ⚠️Категорії не синхронізовані
         @else
             ✅ Категорії синхронізовані
         @endif
@@ -91,16 +91,18 @@
             <th width="138" class="ph2 pv1"></th>
             <th width="79" class="fw4 ba b--black ph2 pv1 tc">Salesbox</th>
             <th width="79" class="fw4 ba b--black ph2 pv1 tc">Poster</th>
+            <th width="79" class="fw4 ba b--black ph2 pv1 tc">Звязок між системами</th>
         </tr>
         </thead>
         <tbody>
         @foreach($categories as $category)
             <tr>
                 <td class="ba b--black ph2 pv1">
-                    <span style="width: 121px" class="truncate dib"> {{ $category['name'] }} </span>
+                    <span style="width: 121px" class="truncate dib" title="{{ $category['name'] }}"> {{ $category['name'] }} </span>
                 </td>
                 <td class="ba b--black ph2 pv1 tc">{{ $category['salesbox'] ? '✅': '❌' }}</td>
                 <td class="ba b--black ph2 pv1 tc">{{ $category['poster'] ? '✅': '❌' }}</td>
+                <td class="ba b--black ph2 pv1 tc"> {{ $category['connected'] ?  '✅': '❌' }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -122,18 +124,20 @@
             <th width="138" class="ph2 pv1"></th>
             <th width="79" class="fw4 ba b--black ph2 pv1 tc">Salesbox</th>
             <th width="79" class="fw4 ba b--black ph2 pv1 tc">Poster</th>
+            <th width="79" class="fw4 ba b--black ph2 pv1 tc">Звязок між системами</th>
         </tr>
         </thead>
         <tbody>
         @foreach($products as $product)
         <tr>
             <td class="ba b--black pv1 ph2">
-              <span style="width: 121px" class="truncate dib">
+              <span style="width: 121px" class="truncate dib" title="{{ $product['name'] }}">
                 {{ $product['name'] }}
               </span>
             </td>
             <td class="ba b--black ph2 pv1 tc"> {{ $product['salesbox'] ? '✅': '❌' }}</td>
             <td class="ba b--black ph2 pv1 tc"> {{ $product['poster'] ? '✅': '❌' }}</td>
+            <td class="ba b--black ph2 pv1 tc"> {{ $product['connected'] ? '✅' : '❌' }}</td>
         </tr>
         @endforeach
 
