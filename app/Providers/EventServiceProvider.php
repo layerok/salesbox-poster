@@ -52,12 +52,12 @@ class EventServiceProvider extends ServiceProvider
             PosterProductSyncWithSalesbox::class,
         ],
 
-        PosterCategoryRemoved::class => [
-            PosterCategoryRemoveInSalesbox::class,
-        ],
-        PosterCategoryActionPerformed::class=> [
-            PosterCategorySyncWithSalesbox::class,
-        ],
+//        PosterCategoryRemoved::class => [
+//            PosterCategoryRemoveInSalesbox::class,
+//        ],
+//        PosterCategoryActionPerformed::class=> [
+//            PosterCategorySyncWithSalesbox::class,
+//        ],
     ];
 
     /**
