@@ -64,6 +64,10 @@ class PosterProductAsSalesboxOffer {
             ]);
         }
 
+        if(!SalesboxStore::isCategoriesLoaded()) {
+            SalesboxStore::loadCategories();
+        }
+
         $category = SalesboxStore::findCategoryByExternalId($this->posterProduct->getMenuCategoryId());
 
         if ($category) {
