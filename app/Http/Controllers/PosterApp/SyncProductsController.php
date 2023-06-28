@@ -100,7 +100,7 @@ class SyncProductsController
                 ];
             }, $update_offers);
 
-            return SalesboxApi::updateManyOffers([
+            SalesboxApi::updateManyOffers([
                 'offers' => array_values($offersAsArray)// reindex array, it's important, otherwise salesbox api will fail
             ]);
         }

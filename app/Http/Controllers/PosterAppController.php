@@ -5,10 +5,17 @@ namespace App\Http\Controllers;
 use App\Poster\Facades\PosterStore;
 use App\Salesbox\Facades\SalesboxStore;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use poster\src\PosterApi;
 
 class PosterAppController
 {
+
+    public $request;
+
+    public function __construct(Request $request) {
+        $this->request = $request;
+    }
     public function authorize($code)
     {
         $auth = [
@@ -31,8 +38,12 @@ class PosterAppController
 
     public function __invoke($code = null)
     {
+        $query = $this->request->query();
         $accessToken = cache()->get($code);
-        if (!$accessToken) {
+        if(isset($query['access_token'])) {
+            $accessToken = $query['access_token'];
+            cache()->put($code, $accessToken);
+        } else if (!$accessToken) {
             $res = $this->authorize($code);
 
             if (isset($res['error'])) {
