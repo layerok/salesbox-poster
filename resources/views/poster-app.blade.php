@@ -38,7 +38,7 @@
         .dataTables_paginate {
             display: flex;
             justify-content: flex-end;
-            width: 376px;
+
         }
 
         .paginate_button {
@@ -68,189 +68,175 @@
     </style>
 </head>
 <body>
-<div>
-    <p class="fw6 f5 lh-copy">Тести</p>
-    <p class="mt2 f7">
-        @if(count($products) > 0)
-            ⚠️Товари не синхронізовані
-        @else
-            ✅ Товари синхронізовані
-        @endif
-    </p>
-    <p class="mt2 f7">
-        @if(count($categories) > 0)
-            ⚠️Категорії не синхронізовані
-        @else
-            ✅ Категорії синхронізовані
-        @endif
-    </p>
+{{--<div>--}}
+{{--    <p class="fw6 f5 lh-copy">Тести</p>--}}
+{{--    <p class="mt2 f7">--}}
+{{--        @if(count($products) > 0)--}}
+{{--            ⚠️Товари не синхронізовані--}}
+{{--        @else--}}
+{{--            ✅ Товари синхронізовані--}}
+{{--        @endif--}}
+{{--    </p>--}}
+{{--    <p class="mt2 f7">--}}
+{{--        @if(count($categories) > 0)--}}
+{{--            ⚠️Категорії не синхронізовані--}}
+{{--        @else--}}
+{{--            ✅ Категорії синхронізовані--}}
+{{--        @endif--}}
+{{--    </p>--}}
+{{--</div>--}}
+{{--<div style="margin-top: 78px"></div>--}}
+<div class="">
+    @if(count($categories) > 0)
+        <div class="section dn">
+
+            <p class="fw6 f5 lh-copy">Категорії</p>
+            <div class="dib">
+                <table id="categoryTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
+                    <thead>
+                    <tr>
+                        <th width="138" class="ph2 pv1"></th>
+                        <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
+                        <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($categories as $category)
+                        <tr>
+                            <td class="ba b--black ph2 pv1">
+                                <span style="width: 121px" class="truncate dib"
+                                      title="{{ $category['name'] }}"> {{ $category['name'] }} </span>
+                            </td>
+                            <td class="ba b--black ph2 pv1 tc">
+                                {{$category['salesbox']['created'] ? '✅': '❌'}}
+                            </td>
+                            <td class="ba b--black ph2 pv1 tc">
+                                {{$category['poster']['created'] ? '✅': '❌'}}
+                            </td>
+
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+
+            <form action="/poster-app/{{ $code }}/sync-categories" method="post" class="mt1">
+                <button type="button" class="blue underline js-open pointer bn bg-transparent pa0 dim"
+                        data-target="#option-1">Опції
+                </button>
+
+                <ul id="option-1" style="width: 300px;" class="list pl0 mb0 mt2 dn ">
+                    <li>
+                        <label title="Створює категорії в системі Salesbox" class="flex items-center">
+                            <input name="create" type="checkbox" checked/>
+                            <span class="ml1">Створити</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label title="Оновлює категорії в системі Salesbox" class="flex items-center">
+                            <input name="update" type="checkbox" checked/>
+                            <span class="ml1">Оновити</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label title="Видаляє категорії з системи Salesbox" class="flex items-center">
+                            <input name="delete" type="checkbox" checked/>
+                            <span class="ml1">Видалити</span>
+                        </label>
+                    </li>
+                </ul>
+                <button type="submit" class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
+                    Синхронізувати
+                </button>
+
+            </form>
+        </div>
+    @endif
+
+    @if(count($products) > 0)
+        <div class="section dn" style="margin-top: 75px">
+
+            <p class="fw6 f5 lh-copy">Товари</p>
+            <div class="dib">
+                <table id="productTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
+                    <thead>
+                    <tr>
+                        <th width="138" class="ph2 pv1"></th>
+                        <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
+                        <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($products as $product)
+                        <tr>
+                            <td class="ba b--black pv1 ph2">
+                                <span style="width: 121px" class="truncate dib"
+                                      title="{{ $product['name'] }}">{{ $product['name'] }}</span>
+                            </td>
+                            <td class="ba b--black ph2 pv1 tc">
+                                @if($product['salesbox']['created'])
+                                    ✅
+                                @else
+                                    <button title="створити в сейлсбокс" class="bg-transparent bn" type="submit">❌</button>
+                                @endif
+
+                            </td>
+                            <td class="ba b--black ph2 pv1 tc">
+                                @if($product['poster']['created'])
+                                    ✅
+                                @else
+                                    ❌
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+
+            <form action="/poster-app/{{ $code }}/sync-products" method="post" class="mt1">
+                <button type="button" class="blue underline js-open pointer bn bg-transparent pa0 dim"
+                        data-target="#option-2">
+                    Опції
+                </button>
+                <ul id="option-2" style="width: 200px;" class="list pl0 mb0 mt2 dn ">
+                    <li>
+                        <label class="flex items-center">
+                            <input name="create" type="checkbox" checked/>
+                            <span class="ml1">Створити</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center">
+                            <input name="update" type="checkbox" checked/>
+                            <span class="ml1">Оновити</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="flex items-center">
+                            <input name="delete" type="checkbox" checked/>
+                            <span class="ml1">Видалити</span>
+                        </label>
+                    </li>
+                </ul>
+                <button type="submit" class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
+                    Синхронізувати
+                </button>
+            </form>
+        </div>
+    @endif
 </div>
-@if(count($categories) > 0)
-    <form action="/poster-app/{{ $code }}/sync-categories" method="post" style="margin-top: 78px">
-        <p class="fw6 f5 lh-copy">Категорії</p>
-        <table id="categoryTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
-            <thead>
-            <tr>
-                <th width="138" class="ph2 pv1"></th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Стан</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($categories as $category)
-                <tr>
-                    <td class="ba b--black ph2 pv1">
-                        <span style="width: 121px" class="truncate dib"
-                              title="{{ $category['name'] }}"> {{ $category['name'] }} </span>
-                    </td>
-                    <td class="ba b--black ph2 pv1 tc">
-                        @if($category['salesbox']['created'])
-                            ✅
-                        @else
-                            ❌
-                        @endif
-                    </td>
-                    <td class="ba b--black ph2 pv1 tc">
-                        @if($category['poster']['created'])
-                            ✅
-                        @else
-                            ❌
-                        @endif
-                    </td>
-                    <td class="ba b--black ph2 pv1 tc">
-                        @if($category['salesbox']['created'])
-                            @if(!$category['poster']['created'])
-                                Потребує видалення
-                                <input type="hidden" name="delete_ids[]" value="{{$category['salesbox']['id']}}"/>
-                            @else
-                                <input type="hidden" name="update_ids[]" value="{{$category['poster']['id']}}"/>
-                                Потребує оновлення
-                            @endif
-                        @else
-                            <input type="hidden" name="create_ids[]" value="{{$category['poster']['id']}}"/>
-                            Потребує створення
-                        @endif
 
-
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-
-        <div class="mt1">
-            <button type="button" class="blue underline js-open pointer bn bg-transparent pa0 dim"
-                    data-target="#option-1">Опції
-            </button>
-
-            <ul id="option-1" style="width: 300px;" class="list pl0 mb0 mt2 dn ">
-                <li>
-                    <label title="Створює категорії в системі Salesbox" class="flex items-center">
-                        <input name="create" type="checkbox" checked/>
-                        <span class="ml1">Створити</span>
-                    </label>
-                </li>
-                <li>
-                    <label title="Оновлює категорії в системі Salesbox" class="flex items-center">
-                        <input name="update" type="checkbox" checked/>
-                        <span class="ml1">Оновити</span>
-                    </label>
-                </li>
-                <li>
-                    <label title="Видаляє категорії з системи Salesbox" class="flex items-center">
-                        <input name="delete" type="checkbox" checked/>
-                        <span class="ml1">Видалити</span>
-                    </label>
-                </li>
-            </ul>
-            <button type="submit" class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
-                Синхронізувати
-            </button>
-
-        </div>
-    </form>
-@endif
-
-@if(count($products) > 0)
-    <div style="margin-top: 50px">
-        <p class="fw6 f5 lh-copy">Товари</p>
-        <table id="productTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
-            <thead>
-            <tr>
-                <th width="138" class="ph2 pv1"></th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
-                <th width="79" class="fw4 ba b--black ph2 pv1 tc">Стан</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($products as $product)
-                <tr>
-                    <td class="ba b--black pv1 ph2">
-              <span style="width: 121px" class="truncate dib" title="{{ $product['name'] }}">
-                {{ $product['name'] }}
-              </span>
-                    </td>
-                    <td class="ba b--black ph2 pv1 tc"> {{ $product['salesbox']['created'] ? '✅': '❌' }}</td>
-                    <td class="ba b--black ph2 pv1 tc"> {{ $product['poster']['created'] ? '✅': '❌' }}</td>
-                    <td class="ba b--black ph2 pv1 tc">
-                        @if($product['salesbox']['created'])
-                            @if(!$product['poster']['created'])
-                                Потребує видалення
-                            @else
-                                Потребує оновлення
-                            @endif
-                        @else
-                            Потребує створення
-                        @endif
-
-
-                    </td>
-                </tr>
-            @endforeach
-
-            </tbody>
-        </table>
-
-        <div class="mt1">
-            <button class="blue underline js-open pointer bn bg-transparent pa0 dim" data-target="#option-2">
-                Опції
-            </button>
-
-            <ul id="option-2" style="width: 200px;" class="list pl0 mb0 mt2 dn ">
-                <li>
-                    <label class="flex items-center">
-                        <input type="checkbox" checked/>
-                        <span class="ml1">Створити</span>
-                    </label>
-                </li>
-                <li>
-                    <label class="flex items-center">
-                        <input type="checkbox" checked/>
-                        <span class="ml1">Оновити</span>
-                    </label>
-                </li>
-                <li>
-                    <label class="flex items-center">
-                        <input type="checkbox" checked/>
-                        <span class="ml1">Видалити</span>
-                    </label>
-                </li>
-            </ul>
-            <button class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
-                Синхронізувати
-            </button>
-        </div>
-    </div>
-@endif
 <script>
     window.addEventListener('load', function () {
         top.postMessage({hideSpinner: true}, '*');
     }, false)
 </script>
 <script>
-    $('#categoryTable').DataTable({
+    const $categoryTable = $('#categoryTable');
+    $categoryTable.DataTable({
         searching: false,
         ordering: false,
         paging: true,
@@ -258,7 +244,9 @@
         info: false,
         bLengthChange: false
     });
-    $('#productTable').DataTable({
+
+    const $productTable = $('#productTable');
+    $productTable.DataTable({
         searching: false,
         ordering: false,
         paging: true,
@@ -266,6 +254,7 @@
         info: false,
         bLengthChange: false
     });
+    $('.section').removeClass('dn');
     $('.js-open').on('click', function () {
 
         const $this = $(this);

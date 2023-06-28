@@ -9,7 +9,8 @@ use poster\src\PosterApi;
 
 class PosterAppController
 {
-    public function authorize($code) {
+    public function authorize($code)
+    {
         $auth = [
             'application_id' => config('poster.application_id'),
             'application_secret' => config('poster.application_secret'),
@@ -27,11 +28,11 @@ class PosterAppController
 
         return json_decode($response->getBody(), true);
     }
+
     public function __invoke($code = null)
     {
-
         $accessToken = cache()->get($code);
-        if(!$accessToken) {
+        if (!$accessToken) {
             $res = $this->authorize($code);
 
             if (isset($res['error'])) {
@@ -51,42 +52,128 @@ class PosterAppController
             'access_token' => $accessToken,
         ]);
 
+        $categories = $this->getCategoriesTable();
+        $products = $this->getProductsTable();
+
+        return view('poster-app', [
+            'code' => $code,
+            'categories' => $categories,
+            'products' => $products
+        ]);
+    }
+
+    public function getProductsTable()
+    {
+        $posterProducts = PosterStore::loadProducts();
+        $salesboxOffers = SalesboxStore::loadOffers();
+        $products = [];
+
+        foreach ($posterProducts as $posterProduct) {
+            if ($posterProduct->hasDishModificationGroups()) {
+                // skip dish with modification groups
+                continue;
+            }
+
+            if ($posterProduct->hasProductModifications()) {
+                foreach ($posterProduct->getProductModifications() as $modification) {
+                    $products[] = [
+                        'name' => $posterProduct->getProductName() . ', ' . $modification->getModificatorName(),
+                        'poster' => [
+                            'created' => true,
+                        ],
+                        'salesbox' => [
+                            'created' => !!SalesboxStore::findOfferByExternalId($posterProduct->getProductId(), $modification->getModificatorId())
+                        ]
+                    ];
+                }
+                continue;
+            }
+
+
+            $products[] = [
+                'name' => $posterProduct->getProductName(),
+                'poster' => [
+                    'created' => true,
+                ],
+                'salesbox' => [
+                    'created' => !!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId()),
+
+                ],
+
+            ];
+
+
+        }
+
+        foreach ($salesboxOffers as $salesboxOffer) {
+            if ($salesboxOffer->getExternalId()) {
+
+                if ($salesboxOffer->getModifierId()) {
+                    $posterProduct = PosterStore::findProduct($salesboxOffer->getExternalId());
+                    $modification = $posterProduct->findProductModification($salesboxOffer->getModifierId());
+
+                    $products[] = [
+                        'name' => $salesboxOffer->getAttributes('name') . ' модифікація#' . $salesboxOffer->getModifierId(),
+                        'poster' => [
+                            'created' => !!$modification,
+                        ],
+                        'salesbox' => [
+                            'created' => true,
+                        ]
+                    ];
+                } else {
+                    $products[] = [
+                        'name' => $salesboxOffer->getAttributes('name'),
+                        'poster' => [
+                            'created' => PosterStore::productExists($salesboxOffer->getExternalId()),
+                        ],
+                        'salesbox' => [
+                            'created' => true,
+                        ],
+                    ];
+
+                }
+                continue;
+            }
+
+            $products[] = [
+                'name' => $salesboxOffer->getAttributes('name'),
+                'poster' => [
+                    'created' => false
+                ],
+                'salesbox' => [
+                    'created' => true,
+                    'id' => $salesboxOffer->getId()
+                ],
+
+            ];
+        }
+
+        return $products;
+
+    }
+
+    public function getCategoriesTable()
+    {
         $salesboxCategories = SalesboxStore::loadCategories();
         $posterCategories = PosterStore::loadCategories();
 
         $categories = [];
-        $products = [];
+
 
         foreach ($salesboxCategories as $salesboxCategory) {
             if ($salesboxCategory->getExternalId()) {
-                $posterCategory = PosterStore::findCategory($salesboxCategory->getExternalId());
-                if (!$posterCategory) {
-                    $categories[] = [
-                        'name' => $salesboxCategory->getAttributes('name'),
-                        'poster' => [
-                            'created' => false
-                        ],
-                        'salesbox' => [
-                            'created' => true,
-                            'id' =>  $salesboxCategory->getId(),
-                        ],
-                    ];
-                } else {
-                    if($posterCategory->isVisible() != $salesboxCategory->getAvailable()) {
-                        $categories[] = [
-                            'name' => $posterCategory->getCategoryName(),
-                            'poster' => [
-                                'created' => true,
-                                'id' => $posterCategory->getCategoryId()
-                            ],
-                            'salesbox' => [
-                                'created' => true,
-                                'id' => $salesboxCategory->getId(),
-                                'stale' => true
-                            ],
-                        ];
-                    }
-                }
+
+                $categories[] = [
+                    'name' => $salesboxCategory->getAttributes('name'),
+                    'poster' => [
+                        'created' => PosterStore::categoryExists($salesboxCategory->getExternalId())
+                    ],
+                    'salesbox' => [
+                        'created' => true,
+                    ],
+                ];
+
             } else {
                 $categories[] = [
                     'name' => $salesboxCategory->getAttributes('name'),
@@ -95,7 +182,6 @@ class PosterAppController
                     ],
                     'salesbox' => [
                         'created' => true,
-                        'id' => $salesboxCategory->getId()
                     ],
 
                 ];
@@ -103,7 +189,7 @@ class PosterAppController
         }
 
         foreach ($posterCategories as $posterCategory) {
-            if($posterCategory->isTopScreen()) {
+            if ($posterCategory->isTopScreen()) {
                 continue;
             }
             if (!SalesboxStore::categoryExistsWithExternalId($posterCategory->getCategoryId())) {
@@ -111,7 +197,6 @@ class PosterAppController
                     'name' => $posterCategory->getCategoryName(),
                     'poster' => [
                         'created' => true,
-                        'id' =>  $posterCategory->getCategoryId(),
                     ],
                     'salesbox' => [
                         'created' => false
@@ -119,91 +204,6 @@ class PosterAppController
                 ];
             }
         }
-
-        $posterProducts = PosterStore::loadProducts();
-        $salesboxOffers = SalesboxStore::loadOffers();
-
-
-        foreach ($posterProducts as $posterProduct) {
-            if ($posterProduct->isDishType()) {
-                if ($posterProduct->hasDishModificationGroups()) {
-
-                } else {
-                    if (!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId())) {
-                        $products[] = [
-                            'name' => $posterProduct->getProductName(),
-                            'poster' => [
-                                'created' => true,
-                                'id' => $posterProduct->getProductId(),
-                            ],
-                            'salesbox' => [
-                                'created' => false
-                            ],
-
-                        ];
-
-                    }
-                }
-            } else {
-                if ($posterProduct->hasProductModifications()) {
-
-                } else {
-                    if (!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId())) {
-                        $products[] = [
-                            'name' => $posterProduct->getProductName(),
-                            'poster' => [
-                                'created' => true,
-                                'id' => $posterProduct->getProductId()
-                            ],
-                            'salesbox' => [
-                                'created' => false
-                            ],
-
-                        ];
-                    }
-                }
-            }
-
-        }
-
-        foreach ($salesboxOffers as $salesboxOffer) {
-            if ($salesboxOffer->getExternalId()) {
-                if (!PosterStore::productExists($salesboxOffer->getExternalId())) {
-                    $products[] = [
-                        'name' => $salesboxOffer->getAttributes('name'),
-                        'poster' => [
-                            'created' => false
-                        ],
-                        'salesbox' => [
-                            'created' => true,
-                            'id' => $salesboxOffer->getId(),
-
-                        ],
-
-                    ];
-                }
-            } else {
-                $products[] = [
-                    'name' => $salesboxOffer->getAttributes('name'),
-                    'poster' => [
-                        'created' => false
-                    ],
-                    'salesbox' => [
-                        'created' => true,
-
-                        'id' => $salesboxOffer->getId()
-                    ],
-
-                ];
-
-            }
-        }
-
-
-        return view('poster-app', [
-            'code' => $code,
-            'categories' => $categories,
-            'products' => $products
-        ]);
+        return $categories;
     }
 }

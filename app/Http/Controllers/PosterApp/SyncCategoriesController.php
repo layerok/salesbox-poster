@@ -4,8 +4,8 @@ namespace App\Http\Controllers\PosterApp;
 
 use App\Poster\Facades\PosterStore;
 use App\Poster\Transformers\PosterCategoryAsSalesboxCategory;
-use App\Salesbox\Facades\SalesboxApi;
 use App\Salesbox\Facades\SalesboxStore;
+use App\Salesbox\Models\SalesboxCategory;
 use Illuminate\Support\Facades\Request;
 use poster\src\PosterApi;
 
@@ -26,74 +26,55 @@ class SyncCategoriesController
             'access_token' => $accessToken,
         ]);
 
-        if(!SalesboxStore::isCategoriesLoaded()) {
-            SalesboxStore::loadCategories();
-        }
-        if(!PosterStore::isCategoriesLoaded()) {
-            PosterStore::loadCategories();
+        $poster_categories = PosterStore::loadCategories();
+        $salesbox_categories = SalesboxStore::loadCategories();
+        $delete_categories = [];
+        $create_categories = [];
+        $update_categories = [];
+
+        foreach ($poster_categories as $poster_category) {
+            if($poster_category->isTopScreen()) {
+                continue;
+            }
+            $salesbox_category = SalesboxStore::findCategoryByExternalId($poster_category->getCategoryId());
+            if ($salesbox_category) {
+                $transformer = new PosterCategoryAsSalesboxCategory($poster_category);
+                $update_categories[] = $transformer->updateFrom($salesbox_category);
+            } else {
+                $transformer = new PosterCategoryAsSalesboxCategory($poster_category);
+                $create_categories[] = $transformer->transform();
+            }
         }
 
-        if(isset($input['create']) && isset($input['create_ids'])) {
-            $this->createManyCategoriesByPosterIds($input['create_ids']);
+        foreach ($salesbox_categories as $salesbox_category) {
+            if ($salesbox_category->getExternalId()) {
+                if (!PosterStore::categoryExists($salesbox_category->getExternalId())) {
+                    $delete_categories[] = $salesbox_category;
+                }
+            } else {
+                // todo: should I delete categories not connected to poster?
+                $delete_categories[] = $salesbox_category;
+            }
+
         }
-        if(isset($input['update']) && isset($input['update_ids'])) {
-            $this->updateManyCategoriesByPosterIds($input['update_ids']);
+        if (count($create_categories) > 0 && isset($input['create'])) {
+            SalesboxStore::createManyCategories($create_categories);
+        }
+        if (count($update_categories) > 0 && isset($input['update'])) {
+
+            array_map(function (SalesboxCategory $salesbox_category) {
+                // don't update names and photos
+                $salesbox_category->resetAttributeToOriginalOne('previewURL');
+                $salesbox_category->resetAttributeToOriginalOne('names');
+                $salesbox_category->resetAttributeToOriginalOne('available');
+            }, $update_categories);
+            SalesboxStore::updateManyCategories($update_categories);
+        }
+        if (count($delete_categories) > 0 && isset($input['delete'])) {
+            SalesboxStore::deleteManyCategories($delete_categories);
         }
 
-        if(isset($input['delete']) && isset($input['delete_ids'])) {
-            $this->deleteManyCategoriesBySalesboxIds($input['delete_ids']);
-        }
         return back();
     }
 
-    public function createManyCategoriesByPosterIds($ids) {
-        if(count($ids)) {
-            $create_salesbox_categories = [];
-            foreach($ids as $id) {
-                $salesbox_category = SalesboxStore::findCategoryByExternalId($id);
-                $posterCategory = PosterStore::findCategory($id);
-                if(!$salesbox_category && $posterCategory) {
-                    $transformer = new PosterCategoryAsSalesboxCategory($posterCategory);
-                    $create_salesbox_categories[] = $transformer->transform();
-                }
-            }
-
-            if(count($create_salesbox_categories) > 0) {
-                SalesboxStore::createManyCategories($create_salesbox_categories);
-            }
-        }
-    }
-
-    public function updateManyCategoriesByPosterIds($ids) {
-        if(count($ids)) {
-            $data = [];
-            foreach($ids as $id) {
-                $posterCategory = PosterStore::findCategory($id);
-                $salesboxCategory = SalesboxStore::findCategoryByExternalId($id);
-                if($posterCategory && $salesboxCategory) {
-                    $data[] = [
-                        'id' => $salesboxCategory->getId(),
-                        'available' => $posterCategory->isVisible(),
-                        'names' => $salesboxCategory->getNames(),
-                        'previewURL'=> $salesboxCategory->getPreviewURL(),
-                    ];
-
-                }
-            }
-            if(count($data)) {
-                SalesboxApi::updateManyCategories([
-                    'categories' => $data
-                ]);
-            }
-        }
-    }
-
-    public function deleteManyCategoriesBySalesboxIds($ids) {
-        if(count($ids)) {
-            SalesboxApi::deleteManyCategories([
-                'ids' => $ids,
-                'recursively' => true
-            ]);
-        }
-    }
 }

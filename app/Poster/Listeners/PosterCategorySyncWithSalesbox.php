@@ -82,6 +82,8 @@ class PosterCategorySyncWithSalesbox
                     if (count($salesbox_category->getOriginalAttributes('names')) > 0) {
                         $salesbox_category->resetAttributeToOriginalOne('names');
                     }
+
+                    $salesbox_category->resetAttributeToOriginalOne('available');
                 }, $poster_categories_as_salesbox_ones);
 
                 SalesboxStore::updateManyCategories($poster_categories_as_salesbox_ones);

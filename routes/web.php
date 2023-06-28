@@ -21,3 +21,4 @@ Route::get('/', function () {
 Route::get('/poster-app/{code}', \App\Http\Controllers\PosterAppController::class);
 
 Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterApp\SyncCategoriesController::class);
+Route::post('/poster-app/{code}/sync-products', \App\Http\Controllers\PosterApp\SyncProductsController::class);
