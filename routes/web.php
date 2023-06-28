@@ -18,4 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/poster-app/{code?}', \App\Http\Controllers\PosterAppController::class);
+Route::get('/poster-app/{code}', \App\Http\Controllers\PosterAppController::class);
+
+Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterApp\SyncCategoriesController::class);

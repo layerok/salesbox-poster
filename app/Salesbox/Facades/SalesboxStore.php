@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static array deleteManyOffers(SalesboxOfferV4[] $offers)
  * @method static SalesboxOrder|null getOrderById(string $id)
  *
+ * @method static bool isCategoriesLoaded()
+ * @method static bool isOffersLoaded()
+ *
  * @method static void authenticate()
  *
  * @see  \App\Salesbox\Stores\SalesboxStore;

@@ -53,4 +53,8 @@ class PosterCategory {
     public function isVisible(): bool {
         return !!$this->getVisible()[0]->visible;
     }
+
+    public function isTopScreen(): bool {
+        return $this->getCategoryId() == "0";
+    }
 }

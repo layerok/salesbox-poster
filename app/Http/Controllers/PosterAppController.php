@@ -9,8 +9,7 @@ use poster\src\PosterApi;
 
 class PosterAppController
 {
-    public function __invoke($code = null)
-    {
+    public function authorize($code) {
         $auth = [
             'application_id' => config('poster.application_id'),
             'application_secret' => config('poster.application_secret'),
@@ -26,10 +25,21 @@ class PosterAppController
             'form_params' => $auth
         ]);
 
-        $data = json_decode($response->getBody(), true);
+        return json_decode($response->getBody(), true);
+    }
+    public function __invoke($code = null)
+    {
 
-        if (isset($data['error'])) {
-            return view('poster-app-error', $data);
+        $accessToken = cache()->get($code);
+        if(!$accessToken) {
+            $res = $this->authorize($code);
+
+            if (isset($res['error'])) {
+                return view('poster-app-error', $res);
+            }
+
+            $accessToken = $res['access_token'];
+            cache()->put($code, $accessToken);
         }
 
         SalesboxStore::authenticate();
@@ -38,7 +48,7 @@ class PosterAppController
             'application_id' => $config['application_id'],
             'application_secret' => $config['application_secret'],
             'account_name' => $config['account_name'],
-            'access_token' => $data['access_token'],
+            'access_token' => $accessToken,
         ]);
 
         $salesboxCategories = SalesboxStore::loadCategories();
@@ -49,31 +59,63 @@ class PosterAppController
 
         foreach ($salesboxCategories as $salesboxCategory) {
             if ($salesboxCategory->getExternalId()) {
-                if (!PosterStore::categoryExists($salesboxCategory->getExternalId())) {
+                $posterCategory = PosterStore::findCategory($salesboxCategory->getExternalId());
+                if (!$posterCategory) {
                     $categories[] = [
-                        'name' => $salesboxCategory->getNames()[0],
-                        'poster' => false,
-                        'salesbox' => true,
-                        'connected' => true
+                        'name' => $salesboxCategory->getAttributes('name'),
+                        'poster' => [
+                            'created' => false
+                        ],
+                        'salesbox' => [
+                            'created' => true,
+                            'id' =>  $salesboxCategory->getId(),
+                        ],
                     ];
+                } else {
+                    if($posterCategory->isVisible() != $salesboxCategory->getAvailable()) {
+                        $categories[] = [
+                            'name' => $posterCategory->getCategoryName(),
+                            'poster' => [
+                                'created' => true,
+                                'id' => $posterCategory->getCategoryId()
+                            ],
+                            'salesbox' => [
+                                'created' => true,
+                                'id' => $salesboxCategory->getId(),
+                                'stale' => true
+                            ],
+                        ];
+                    }
                 }
             } else {
                 $categories[] = [
-                    'name' => $salesboxCategory->getNames()[0],
-                    'poster' => false,
-                    'salesbox' => true,
-                    'connected' => false
+                    'name' => $salesboxCategory->getAttributes('name'),
+                    'poster' => [
+                        'created' => false
+                    ],
+                    'salesbox' => [
+                        'created' => true,
+                        'id' => $salesboxCategory->getId()
+                    ],
+
                 ];
             }
         }
 
         foreach ($posterCategories as $posterCategory) {
+            if($posterCategory->isTopScreen()) {
+                continue;
+            }
             if (!SalesboxStore::categoryExistsWithExternalId($posterCategory->getCategoryId())) {
                 $categories[] = [
                     'name' => $posterCategory->getCategoryName(),
-                    'poster' => true,
-                    'salesbox' => false,
-                    'connected' => true
+                    'poster' => [
+                        'created' => true,
+                        'id' =>  $posterCategory->getCategoryId(),
+                    ],
+                    'salesbox' => [
+                        'created' => false
+                    ],
                 ];
             }
         }
@@ -90,9 +132,14 @@ class PosterAppController
                     if (!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId())) {
                         $products[] = [
                             'name' => $posterProduct->getProductName(),
-                            'poster' => true,
-                            'salesbox' => false,
-                            'connected' => true
+                            'poster' => [
+                                'created' => true,
+                                'id' => $posterProduct->getProductId(),
+                            ],
+                            'salesbox' => [
+                                'created' => false
+                            ],
+
                         ];
 
                     }
@@ -104,9 +151,14 @@ class PosterAppController
                     if (!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId())) {
                         $products[] = [
                             'name' => $posterProduct->getProductName(),
-                            'poster' => true,
-                            'salesbox' => false,
-                            'connected' => true
+                            'poster' => [
+                                'created' => true,
+                                'id' => $posterProduct->getProductId()
+                            ],
+                            'salesbox' => [
+                                'created' => false
+                            ],
+
                         ];
                     }
                 }
@@ -118,18 +170,30 @@ class PosterAppController
             if ($salesboxOffer->getExternalId()) {
                 if (!PosterStore::productExists($salesboxOffer->getExternalId())) {
                     $products[] = [
-                        'name' => $salesboxOffer->getNames()[0],
-                        'poster' => false,
-                        'salesbox' => true,
-                        'connected' => true
+                        'name' => $salesboxOffer->getAttributes('name'),
+                        'poster' => [
+                            'created' => false
+                        ],
+                        'salesbox' => [
+                            'created' => true,
+                            'id' => $salesboxOffer->getId(),
+
+                        ],
+
                     ];
                 }
             } else {
                 $products[] = [
                     'name' => $salesboxOffer->getAttributes('name'),
-                    'poster' => false,
-                    'salesbox' => true,
-                    'connected' => false
+                    'poster' => [
+                        'created' => false
+                    ],
+                    'salesbox' => [
+                        'created' => true,
+
+                        'id' => $salesboxOffer->getId()
+                    ],
+
                 ];
 
             }

@@ -25,6 +25,10 @@ class SalesboxStore
     /** @var string|null $accessToken */
     private $accessToken;
 
+    private $categoriesLoaded = false;
+
+    private $offersLoaded = false;
+
 
     /**
      * @return void
@@ -51,6 +55,7 @@ class SalesboxStore
         }, SalesboxApiV4::getOffers([
             'pageSize' => 10000
         ])['data']);
+        $this->offersLoaded = true;
         return $this->offers;
     }
 
@@ -91,6 +96,7 @@ class SalesboxStore
         $this->categories = array_map(function ($item) {
             return new SalesboxCategory($item);
         }, SalesboxApi::getCategories()['data']);
+        $this->categoriesLoaded = true;
         return $this->categories;
     }
 
@@ -283,5 +289,13 @@ class SalesboxStore
     public function getOrderById(string $id): ?SalesboxOrder {
         $res = SalesboxApi::getOrderById($id);
         return new SalesboxOrder($res['data']);
+    }
+
+    public function isCategoriesLoaded() :bool {
+        return $this->categoriesLoaded;
+    }
+
+    public function isOffersLoaded() :bool {
+        return $this->offersLoaded;
     }
 }
