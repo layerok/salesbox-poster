@@ -231,7 +231,7 @@ class PosterProductSyncWithSalesbox
                 return [
                     'id' => $offer->getId(),
                     'categories' => $offer->getCategories(),
-                    'available' => $offer->getAvailable(),
+                    //'available' => $offer->getAvailable(),
                     'price' => $offer->getPrice(),
                 ];
             }, $update_salesbox_offers);

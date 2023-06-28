@@ -18,6 +18,7 @@
     <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" language="javascript"
             src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
     <style>
         *,
         *:after,
@@ -27,7 +28,7 @@
 
         body {
             font-family: "Inter", sans-serif;
-            padding: 40px;
+           padding: 0;
             margin: 0;
         }
 
@@ -65,30 +66,36 @@
         .paginate_button.next, .paginate_button.previous {
             display: none;
         }
+        #app {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
     </style>
+
 </head>
 <body>
-{{--<div>--}}
-{{--    <p class="fw6 f5 lh-copy">Тести</p>--}}
-{{--    <p class="mt2 f7">--}}
-{{--        @if(count($products) > 0)--}}
-{{--            ⚠️Товари не синхронізовані--}}
-{{--        @else--}}
-{{--            ✅ Товари синхронізовані--}}
-{{--        @endif--}}
-{{--    </p>--}}
-{{--    <p class="mt2 f7">--}}
-{{--        @if(count($categories) > 0)--}}
-{{--            ⚠️Категорії не синхронізовані--}}
-{{--        @else--}}
-{{--            ✅ Категорії синхронізовані--}}
-{{--        @endif--}}
-{{--    </p>--}}
-{{--</div>--}}
-{{--<div style="margin-top: 78px"></div>--}}
-<div class="">
+<div id="app">
+    <div>
+        <p class="fw6 f5 lh-copy">Тести</p>
+        <p class="mt2 f7">
+            @if($productsSynced)
+                ✅ Товари синхронізовані
+            @else
+                ❌ Товари не синхронізовані
+            @endif
+        </p>
+        <p class="mt2 f7">
+            @if($categoriesSynced)
+                ✅ Категорії синхронізовані
+            @else
+                ❌ Категорії не синхронізовані
+            @endif
+        </p>
+    </div>
     @if(count($categories) > 0)
-        <div class="section dn">
+        <div class="section dn " style="margin-top: 50px">
 
             <p class="fw6 f5 lh-copy">Категорії</p>
             <div class="dib">
@@ -130,25 +137,36 @@
                     <li>
                         <label title="Створює категорії в системі Salesbox" class="flex items-center">
                             <input name="create" type="checkbox" checked/>
-                            <span class="ml1">Створити</span>
+                            <span class="ml1">Створення</span>
                         </label>
                     </li>
                     <li>
                         <label title="Оновлює категорії в системі Salesbox" class="flex items-center">
                             <input name="update" type="checkbox" checked/>
-                            <span class="ml1">Оновити</span>
+                            <span class="ml1">Оновлення</span>
                         </label>
                     </li>
                     <li>
                         <label title="Видаляє категорії з системи Salesbox" class="flex items-center">
                             <input name="delete" type="checkbox" checked/>
-                            <span class="ml1">Видалити</span>
+                            <span class="ml1">Видалення</span>
                         </label>
                     </li>
                 </ul>
                 <button type="submit" class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
                     Синхронізувати
                 </button>
+                <div class="mt3">
+                    <div style="font-size: 12px">Як працює синхронізація категорій?</div>
+                    <ul class="list pl0 mt1 mb0" style="font-size: 10px">
+                        <li>Категорії які не існують в сейлсбоксі, але існують в постері будуть створені в сейлбоксі
+                        </li>
+                        <li>Категорії які існують в сейлбоксі, але не існують в постері будут видалені із сейлсбокса
+                        </li>
+                        <li>Категорії які існують в постері і у сейлбоксі ніяк не зміняться</li>
+                    </ul>
+
+                </div>
 
             </form>
         </div>
@@ -178,7 +196,8 @@
                                 @if($product['salesbox']['created'])
                                     ✅
                                 @else
-                                    <button title="створити в сейлсбокс" class="bg-transparent bn" type="submit">❌</button>
+                                    <button title="створити в сейлсбокс" class="bg-transparent bn" type="submit">❌
+                                    </button>
                                 @endif
 
                             </td>
@@ -205,71 +224,80 @@
                     <li>
                         <label class="flex items-center">
                             <input name="create" type="checkbox" checked/>
-                            <span class="ml1">Створити</span>
+                            <span class="ml1">Створення</span>
                         </label>
                     </li>
                     <li>
                         <label class="flex items-center">
                             <input name="update" type="checkbox" checked/>
-                            <span class="ml1">Оновити</span>
+                            <span class="ml1">Оновлення</span>
                         </label>
                     </li>
                     <li>
                         <label class="flex items-center">
                             <input name="delete" type="checkbox" checked/>
-                            <span class="ml1">Видалити</span>
+                            <span class="ml1">Видалення</span>
                         </label>
                     </li>
                 </ul>
                 <button type="submit" class="mt2 f7 bg-black white bn pv2 ph3 pointer dim db">
                     Синхронізувати
                 </button>
+                <div class="mt3">
+                    <div style="font-size: 12px">Як працює синхронізація товарів?</div>
+                    <ul class="list pl0 mt1 mb0" style="font-size: 10px">
+                        <li>Товари які не існують в сейлсбоксі, але існують в постері будуть створені в сейлбоксі</li>
+                        <li>Товари які існують в сейлбоксі, але не існують в постері будут видалені із сейлсбокса</li>
+                        <li>Товари які існують в постері і у сейлбоксі оновлять свою ціну</li>
+                    </ul>
+
+                </div>
             </form>
         </div>
     @endif
 </div>
-
 <script>
-    window.addEventListener('load', function () {
-        top.postMessage({hideSpinner: true}, '*');
-    }, false)
+
+
+     window.addEventListener('load', function () {
+         const $categoryTable = $('#categoryTable');
+         $categoryTable.DataTable({
+             searching: false,
+             ordering: false,
+             paging: true,
+             autoWidth: false,
+             info: false,
+             bLengthChange: false
+         });
+
+         const $productTable = $('#productTable');
+         $productTable.DataTable({
+             searching: false,
+             ordering: false,
+             paging: true,
+             autoWidth: false,
+             info: false,
+             bLengthChange: false
+         });
+         $('.section').removeClass('dn');
+         $('.js-open').on('click', function () {
+
+             const $this = $(this);
+             const selector = $this.data('target');
+             const $target = $(selector);
+             if ($target.hasClass('dn')) {
+                 $target.addClass('db');
+                 $target.removeClass('dn');
+             } else {
+                 $target.addClass('dn');
+                 $target.removeClass('db');
+             }
+         })
+         top.postMessage({hideSpinner: true}, '*');
+     }, false)
 </script>
-<script>
-    const $categoryTable = $('#categoryTable');
-    $categoryTable.DataTable({
-        searching: false,
-        ordering: false,
-        paging: true,
-        autoWidth: false,
-        info: false,
-        bLengthChange: false
-    });
 
-    const $productTable = $('#productTable');
-    $productTable.DataTable({
-        searching: false,
-        ordering: false,
-        paging: true,
-        autoWidth: false,
-        info: false,
-        bLengthChange: false
-    });
-    $('.section').removeClass('dn');
-    $('.js-open').on('click', function () {
 
-        const $this = $(this);
-        const selector = $this.data('target');
-        const $target = $(selector);
-        if ($target.hasClass('dn')) {
-            $target.addClass('db');
-            $target.removeClass('dn');
-        } else {
-            $target.addClass('dn');
-            $target.removeClass('db');
-        }
-    })
-
-</script>
 </body>
 </html>
 

@@ -55,10 +55,28 @@ class PosterAppController
         $categories = $this->getCategoriesTable();
         $products = $this->getProductsTable();
 
+        $categoriesSynced = true;
+        $productsSynced = true;
+
+        foreach($categories as $category) {
+            if(!$category['poster']['created'] || !$category['salesbox']['created']) {
+                $categoriesSynced = false;
+            }
+        }
+
+        foreach($products as $product) {
+            if(!$product['poster']['created'] || !$product['salesbox']['created']) {
+                $productsSynced = false;
+            }
+        }
+
+
         return view('poster-app', [
             'code' => $code,
             'categories' => $categories,
-            'products' => $products
+            'products' => $products,
+            'categoriesSynced' => $categoriesSynced,
+            'productsSynced' => $productsSynced
         ]);
     }
 
@@ -97,7 +115,6 @@ class PosterAppController
                 ],
                 'salesbox' => [
                     'created' => !!SalesboxStore::offerExistsWithExternalId($posterProduct->getProductId()),
-
                 ],
 
             ];
@@ -122,10 +139,11 @@ class PosterAppController
                         ]
                     ];
                 } else {
+                    $posterProduct = PosterStore::findProduct($salesboxOffer->getExternalId());
                     $products[] = [
-                        'name' => $salesboxOffer->getAttributes('name'),
+                        'name' => $posterProduct ? $posterProduct->getProductName() : $salesboxOffer->getAttributes('name'),
                         'poster' => [
-                            'created' => PosterStore::productExists($salesboxOffer->getExternalId()),
+                            'created' => !!$posterProduct,
                         ],
                         'salesbox' => [
                             'created' => true,

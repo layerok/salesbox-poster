@@ -81,13 +81,13 @@ class PosterDishSyncWithSalesbox
 
             if (count($product_create_ids) > 0) {
                 $this->createSingleOffers($product_create_ids);
-                $this->createMultipleOffers($product_create_ids);
+                // $this->createMultipleOffers($product_create_ids);
 
             }
 
             if (count($product_update_ids) > 0) {
                 $this->updateSingleOffers($product_update_ids);
-                $this->updateMultipleOffers($product_update_ids);
+                // $this->updateMultipleOffers($product_update_ids);
             }
 
         }
@@ -132,7 +132,7 @@ class PosterDishSyncWithSalesbox
                 return [
                     'id' => $offer->getId(),
                     'categories' => $offer->getCategories(),
-                    'available' => $offer->getAvailable(),
+                    //'available' => $offer->getAvailable(),
                     'price' => $offer->getPrice(),
                 ];
             }, $poster_products_as_salesbox_offers);
@@ -247,7 +247,7 @@ class PosterDishSyncWithSalesbox
                 return [
                     'id' => $offer->getId(),
                     'categories' => $offer->getCategories(),
-                    'available' => $offer->getAvailable(),
+                    //'available' => $offer->getAvailable(),
                     'price' => $offer->getPrice(),
                 ];
             }, $update_salesbox_offers);
