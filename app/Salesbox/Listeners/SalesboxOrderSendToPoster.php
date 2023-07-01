@@ -25,8 +25,6 @@ class SalesboxOrderSendToPoster
     public function handle(SalesboxOrderCreated $event)
     {
         $content = $this->request->getContent();
-        Log::info('hook is here' . $content);
-
         SalesboxStore::authenticate();
         PosterStore::init();
         $rawOrder = json_decode($content, true);
