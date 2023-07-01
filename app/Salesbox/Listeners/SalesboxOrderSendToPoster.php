@@ -5,11 +5,12 @@ namespace App\Salesbox\Listeners;
 use App\Poster\Facades\PosterStore;
 use App\Poster\ServiceMode;
 use App\Salesbox\Events\SalesboxOrderCreated;
-use App\Salesbox\Facades\SalesboxStore;
+use App\Salesbox\Models\SalesboxOrder;
 use App\Salesbox\Models\SalesboxOrderOffer;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use poster\src\PosterApi;
 
 
 class SalesboxOrderSendToPoster
@@ -23,12 +24,12 @@ class SalesboxOrderSendToPoster
 
     public function handle(SalesboxOrderCreated $event)
     {
-        $id1 = 'd71876ce-c3e7-4b87-be1e-283fea769ea3';
-        $id2 = '416ae62d-a36f-4101-83fc-bfd0b30ce678';
+        $content = $this->request->getContent();
+        Log::info('hook is here' . $content);
 
-        SalesboxStore::authenticate();
         PosterStore::init();
-        $order = SalesboxStore::getOrderById($id1);
+        $rawOrder = json_decode($content, true);
+        $order = new SalesboxOrder($rawOrder);
         $user = $order->getUser();
 
         $incomingOrder = [
@@ -77,14 +78,10 @@ class SalesboxOrderSendToPoster
                 ];
             });
 
-        $content = $this->request->getContent();
-
-        Log::info('hook is here' . $content);
-
-//        $res = PosterApi::incomingOrders()->createIncomingOrder($incomingOrder);
-//        if(!isset($res->response)) {
-//            throw new \RuntimeException(sprintf("Couldn't send salesbox order#%d to poster: ", $order->getOrderNumber()). json_encode((array)$res));
-//        }
+        $res = PosterApi::incomingOrders()->createIncomingOrder($incomingOrder);
+        if(!isset($res->response)) {
+            throw new \RuntimeException(sprintf("Couldn't send salesbox order#%d to poster: ", $order->getOrderNumber()). json_encode($res));
+        }
 
         return true;
     }
