@@ -5,7 +5,7 @@ namespace App\Salesbox\Listeners;
 use App\Poster\Facades\PosterStore;
 use App\Poster\ServiceMode;
 use App\Salesbox\Events\SalesboxOrderCreated;
-use App\Salesbox\Models\SalesboxOrder;
+use App\Salesbox\Facades\SalesboxStore;
 use App\Salesbox\Models\SalesboxOrderOffer;
 use DateTime;
 use Illuminate\Http\Request;
@@ -27,9 +27,10 @@ class SalesboxOrderSendToPoster
         $content = $this->request->getContent();
         Log::info('hook is here' . $content);
 
+        SalesboxStore::authenticate();
         PosterStore::init();
         $rawOrder = json_decode($content, true);
-        $order = new SalesboxOrder($rawOrder);
+        $order = SalesboxStore::getOrderById($rawOrder['id']);
         $user = $order->getUser();
 
         $incomingOrder = [
@@ -67,9 +68,6 @@ class SalesboxOrderSendToPoster
         }
 
         $incomingOrder['products'] = collect($order->getOffers())
-            ->filter(function(SalesboxOrderOffer $offer) {
-                return !!$offer->getExternalId();
-            })
             ->map(function (SalesboxOrderOffer $offer) {
                 return [
                     'product_id' => $offer->getExternalId(),
