@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'way_of_communication' => 'Спосіб коммунікації',
+    'way_of_communication' => 'Спосіб комунікації',
     'type' => [
         'telegram' => 'Telegram',
         'phone' => 'Зателефонувати',
