@@ -49,7 +49,7 @@ class SalesboxOrderSendToPoster
         if (!$order->isExecuteNow()) {
             $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $order->getExecuteDate());
             if ($datetime->getTimestamp() > time()) {
-                // if delivery time is in the future
+                // delivery time must be in the future
                 $date = date("Y-m-d h:m:s", $datetime->getTimestamp());
                 $incomingOrder['delivery_time'] = $date;
             }
