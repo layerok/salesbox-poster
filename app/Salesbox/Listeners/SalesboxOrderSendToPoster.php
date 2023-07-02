@@ -28,9 +28,15 @@ class SalesboxOrderSendToPoster
         SalesboxStore::authenticate();
         PosterStore::init();
         $rawOrder = json_decode($content, true);
+        Log::info('webhook is received: ' . $rawOrder['id']);
+        if(cache()->get("salesbox_order_{$rawOrder['id']}_is_sent")) {
+            Log::info('order was attempted to be sent for the second time. It was prevented');
+            return true;
+        }
+
         $order = SalesboxStore::getOrderById($rawOrder['id']);
         $user = $order->getUser();
-        Log::info('webhook is received: ' . $order->getId());
+
         $incomingOrder = [
             'spot_id' => 1,
             'phone' => $order->getPhone(),
@@ -86,6 +92,7 @@ class SalesboxOrderSendToPoster
         if (!isset($res->response)) {
             throw new \RuntimeException(sprintf("Couldn't send salesbox order#%d to poster: ", $order->getOrderNumber()) . json_encode($res));
         }
+        cache()->put("salesbox_order_{$order->getId()}_is_sent", true, 60 * 2); // cache for 2 minutes
 
         return true;
     }
