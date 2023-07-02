@@ -30,7 +30,7 @@ class SalesboxOrderSendToPoster
         $rawOrder = json_decode($content, true);
         $order = SalesboxStore::getOrderById($rawOrder['id']);
         $user = $order->getUser();
-
+        Log::info('webhook is received: ' . $order->getId());
         $incomingOrder = [
             'spot_id' => 1,
             'phone' => $order->getPhone(),
@@ -43,8 +43,11 @@ class SalesboxOrderSendToPoster
 
         if (!$order->isExecuteNow()) {
             $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $order->getExecuteDate());
-            $date = date("Y-m-d h:m:s", $datetime->getTimestamp());
-            $incomingOrder['delivery_time'] = $date;
+            if($datetime->getTimestamp() > time()) {
+                // if delivery time is in the future
+                $date = date("Y-m-d h:m:s", $datetime->getTimestamp());
+                $incomingOrder['delivery_time'] = $date;
+            }
         }
 
         if ($order->isCourierDeliveryType()) {
