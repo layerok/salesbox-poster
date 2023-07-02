@@ -53,11 +53,18 @@ class SalesboxOrderSendToPoster
         ];
 
         if (!$order->isExecuteNow()) {
-            $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $order->getExecuteDate());
-            if ($datetime->getTimestamp() > time()) {
-                // delivery time must be in the future
-                $date = date("Y-m-d h:m:s", $datetime->getTimestamp());
-                $incomingOrder['delivery_time'] = $date;
+            $executeDatetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $order->getExecuteDate());
+            // delivery time must be in the future
+            if ($executeDatetime->getTimestamp() > time()) {
+                // order's execute time is in UTC timezone
+                // but poster may be in different timezone
+                $posterTimeZones = PosterApi::settings()->getTimeZones();
+                $prevTimeZone = date_default_timezone_get();
+                date_default_timezone_set($posterTimeZones->response->value); // Europe/Kiev
+                $formattedDeliveryTime = date("Y-m-d H:i:s", $executeDatetime->getTimestamp());
+                date_default_timezone_set($prevTimeZone);
+
+                $incomingOrder['delivery_time'] = $formattedDeliveryTime;
             }
         }
 
