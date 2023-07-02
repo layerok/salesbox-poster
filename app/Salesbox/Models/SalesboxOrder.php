@@ -3,6 +3,8 @@
 namespace App\Salesbox\Models;
 
 
+use App\Salesbox\SalesboxWayOfCommunication;
+
 class SalesboxOrder extends SalesboxModel {
     private $offers;
     private $admin;
@@ -137,6 +139,25 @@ class SalesboxOrder extends SalesboxModel {
         return $this->attributes['customerName'];
     }
 
+    public function isWithoutCommunication() {
+        return $this->getWayOfCommunicationId() === SalesboxWayOfCommunication::WITHOUT;
+    }
+
+    public function isPhoneCommunication() {
+        return $this->getWayOfCommunicationId() === SalesboxWayOfCommunication::PHONE;
+    }
+
+    public function isViberCommunication() {
+        return $this->getWayOfCommunicationId() === SalesboxWayOfCommunication::VIBER;
+    }
+
+    public function isTelegramCommunication() {
+        return $this->getWayOfCommunicationId() === SalesboxWayOfCommunication::TELEGRAM;
+    }
+
+    public function isWhatsAppCommunication() {
+        return $this->getWayOfCommunicationId() === SalesboxWayOfCommunication::WHATSAPP;
+    }
 
     /**
      * @return SalesboxOrderOffer[]

@@ -38,12 +38,17 @@ class SalesboxOrderSendToPoster
             'last_name' => $user->getLastName() ?: null,
             'email' => $user->getEmail() ?: null,
             'service_mode' => ServiceMode::ON_SITE,
-            'comment' => $order->getComment() ?: null
+            'comment' => sprintf(
+                '%s: %s. %s',
+                trans('salesbox::trans.way_of_communication'),
+                trans('salesbox::trans.type.' . $order->getWayOfCommunicationId()),
+                $order->getComment()
+            )
         ];
 
         if (!$order->isExecuteNow()) {
             $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+', $order->getExecuteDate());
-            if($datetime->getTimestamp() > time()) {
+            if ($datetime->getTimestamp() > time()) {
                 // if delivery time is in the future
                 $date = date("Y-m-d h:m:s", $datetime->getTimestamp());
                 $incomingOrder['delivery_time'] = $date;
@@ -78,8 +83,8 @@ class SalesboxOrderSendToPoster
             });
 
         $res = PosterApi::incomingOrders()->createIncomingOrder($incomingOrder);
-        if(!isset($res->response)) {
-            throw new \RuntimeException(sprintf("Couldn't send salesbox order#%d to poster: ", $order->getOrderNumber()). json_encode($res));
+        if (!isset($res->response)) {
+            throw new \RuntimeException(sprintf("Couldn't send salesbox order#%d to poster: ", $order->getOrderNumber()) . json_encode($res));
         }
 
         return true;

@@ -24,6 +24,7 @@ class SalesboxServiceProvider extends ServiceProvider
             return new SalesboxStore();
         });
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'salesbox');
     }
 
     /**
