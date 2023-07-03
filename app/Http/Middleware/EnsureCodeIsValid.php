@@ -19,7 +19,7 @@ class EnsureCodeIsValid
     {
         $code = $request->route()->parameter('code');
         $res = $this->authorize($code);
-        if($res['error']) {
+        if(isset($res['error'])) {
             return response(view('poster-app-error', $res));
         } else {
             return $next($request);
