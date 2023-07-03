@@ -28,7 +28,6 @@ class SalesboxOrderSendToPoster
         SalesboxStore::authenticate();
         PosterStore::init();
         $rawOrder = json_decode($content, true);
-        // Log::info('webhook is received: ' . $rawOrder['id']);
         if(cache()->get("salesbox_order_{$rawOrder['id']}_is_sent")) {
             // Log::info('order was attempted to be sent for the second time. It was prevented');
             return true;
