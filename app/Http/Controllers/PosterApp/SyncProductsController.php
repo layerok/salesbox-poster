@@ -3,10 +3,6 @@
 namespace App\Http\Controllers\PosterApp;
 
 use App\Poster\Facades\PosterStore;
-use App\Poster\Models\PosterDishModification;
-use App\Poster\Models\PosterDishModificationGroup;
-use App\Poster\Transformers\PosterCategoryAsSalesboxCategory;
-use App\Poster\Transformers\PosterDishModificationAsSalesboxOffer;
 use App\Poster\Transformers\PosterProductAsSalesboxOffer;
 use App\Poster\Transformers\PosterProductModificationAsSalesboxOffer;
 use App\Salesbox\Facades\SalesboxApi;
