@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Poster\Facades\PosterStore;
 use App\Salesbox\Facades\SalesboxStore;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use poster\src\PosterApi;
 
@@ -13,54 +12,20 @@ class PosterAppController
 
     public $request;
 
-    public function __construct(Request $request) {
-        $this->request = $request;
-    }
-    public function authorize($code)
+    public function __construct(Request $request)
     {
-        $auth = [
-            'application_id' => config('poster.application_id'),
-            'application_secret' => config('poster.application_secret'),
-            'code' => $code,
-        ];
-        $auth['verify'] = md5(implode(':', $auth));
-
-        $client = new Client([
-            'http_errors' => false
-        ]);
-
-        $response = $client->post('https://joinposter.com/api/v2/auth/manage', [
-            'form_params' => $auth
-        ]);
-
-        return json_decode($response->getBody(), true);
+        $this->request = $request;
     }
 
     public function __invoke($code = null)
     {
-        $query = $this->request->query();
-        $accessToken = cache()->get($code);
-        if(isset($query['access_token'])) {
-            $accessToken = $query['access_token'];
-            cache()->put($code, $accessToken);
-        } else if (!$accessToken) {
-            $res = $this->authorize($code);
-
-            if (isset($res['error'])) {
-                return view('poster-app-error', $res);
-            }
-
-            $accessToken = $res['access_token'];
-            cache()->put($code, $accessToken);
-        }
-
         SalesboxStore::authenticate();
         $config = config('poster');
         PosterApi::init([
             'application_id' => $config['application_id'],
             'application_secret' => $config['application_secret'],
             'account_name' => $config['account_name'],
-            'access_token' => $accessToken,
+            'access_token' => $config['access_token'],
         ]);
 
         $categories = $this->getCategoriesTable();

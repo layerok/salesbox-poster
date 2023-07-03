@@ -23,7 +23,7 @@ class SyncCategoriesController
             'application_id' => $config['application_id'],
             'application_secret' => $config['application_secret'],
             'account_name' => $config['account_name'],
-            'access_token' => $accessToken,
+            'access_token' => $config['access_token']
         ]);
 
         $poster_categories = PosterStore::loadCategories();

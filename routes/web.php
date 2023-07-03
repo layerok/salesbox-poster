@@ -18,7 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/poster-app/{code}', \App\Http\Controllers\PosterAppController::class);
+Route::get('/poster-app/{code}', \App\Http\Controllers\PosterAppController::class)
+    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
 
-Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterApp\SyncCategoriesController::class);
-Route::post('/poster-app/{code}/sync-products', \App\Http\Controllers\PosterApp\SyncProductsController::class);
+Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterApp\SyncCategoriesController::class)
+    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
+
+Route::post('/poster-app/{code}/sync-products', \App\Http\Controllers\PosterApp\SyncProductsController::class)
+    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
