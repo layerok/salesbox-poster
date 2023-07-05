@@ -80,8 +80,9 @@ class SalesboxOrderSendToPoster
                 'address1' => $order->getAddressName(),
                 'address2' => null,
                 'comment' => $order->getDeliveryComment(),
-                'lat' => $order->getAddressLatitude(),
-                'lng' => $order->getAddressLongitude(),
+                // sometimes addressLatitude and addressLongitude value may be "null" as string
+                'lat' => $order->getAddressLatitude() !== "null" ? $order->getAddressLatitude(): null,
+                'lng' => $order->getAddressLongitude() !== "null" ? $order->getAddressLongitude(): null,
             ];
         }
 
