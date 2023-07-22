@@ -131,7 +131,7 @@ class PosterDishSyncWithSalesbox
             $offersAsArray = array_map(function (SalesboxOfferV4 $offer) {
                 return [
                     'id' => $offer->getId(),
-                    'categories' => $offer->getCategories(),
+                    //'categories' => $offer->getCategories(),
                     //'available' => $offer->getAvailable(),
                     'price' => $offer->getPrice(),
                 ];

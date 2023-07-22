@@ -138,8 +138,8 @@ class PosterProductSyncWithSalesbox
             $offersAsArray = array_map(function (SalesboxOfferV4 $offer) {
                 return [
                     'id' => $offer->getId(),
-                    'categories' => $offer->getCategories(),
-                    'available' => $offer->getAvailable(),
+                    // 'categories' => $offer->getCategories(),
+                    // 'available' => $offer->getAvailable(),
                     'price' => $offer->getPrice(),
                 ];
             }, $poster_products_as_salesbox_offers);
