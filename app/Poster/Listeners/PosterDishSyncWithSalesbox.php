@@ -75,8 +75,8 @@ class PosterDishSyncWithSalesbox
 
 
             if (count($category_create_ids) > 0) {
-                $this->createSingleCategories($category_create_ids);
-                SalesboxStore::loadCategories();
+                // $this->createSingleCategories($category_create_ids);
+                // SalesboxStore::loadCategories();
             }
 
             if (count($product_create_ids) > 0) {

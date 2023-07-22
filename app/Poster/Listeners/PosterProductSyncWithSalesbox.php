@@ -77,8 +77,8 @@ class PosterProductSyncWithSalesbox
 
 
             if (count($category_create_ids) > 0) {
-                $this->createCategories($category_create_ids);
-                SalesboxStore::loadCategories();
+                // $this->createCategories($category_create_ids);
+                // SalesboxStore::loadCategories();
             }
 
             if (count($product_create_ids) > 0) {
