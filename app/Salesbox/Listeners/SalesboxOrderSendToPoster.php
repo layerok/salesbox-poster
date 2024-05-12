@@ -36,11 +36,16 @@ class SalesboxOrderSendToPoster
         $order = SalesboxStore::getOrderById($rawOrder['id']);
         $user = $order->getUser();
 
+        $firstName = $user->getFirstName();
+        $lastName = $user->getLastName();
+
         $incomingOrder = [
             'spot_id' => 1,
             'phone' => $order->getPhone(),
-            'first_name' => $user->getFirstName() ?: null,
-            'last_name' => $user->getLastName() ?: null,
+            // PosterPost will throw validation error when first name less than 2 characters
+            'first_name' => ($firstName && strlen($firstName) > 1) ? $firstName: null,
+            // the same with the last name
+            'last_name' => ($lastName && strlen($lastName)) > 1 ? $lastName: null,
             'email' => $user->getEmail() ?: null,
             'service_mode' => ServiceMode::ON_SITE,
             // Don't remove SalesboxOrderID from the comment.
