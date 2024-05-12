@@ -43,11 +43,15 @@ class SalesboxOrderSendToPoster
             'last_name' => $user->getLastName() ?: null,
             'email' => $user->getEmail() ?: null,
             'service_mode' => ServiceMode::ON_SITE,
+            // Don't remove SalesboxOrderID from the comment.
+            // Custom extension of the PosterPos platform relies on this ID to determine
+            // how many bonuses the user of the salesbox app applied to the order
             'comment' => sprintf(
-                '%s: %s. %s',
+                '%s: %s. %s; SalesboxOrderID: %s',
                 trans('salesbox::trans.way_of_communication'),
                 trans('salesbox::trans.type.' . $order->getWayOfCommunicationId()),
-                $order->getComment()
+                $order->getComment(),
+                $order->getId()
             )
         ];
 
