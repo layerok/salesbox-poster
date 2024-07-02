@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PosterApp;
 
 use App\Poster\Facades\PosterStore;
+use App\Poster\Models\PosterCategory;
 use App\Poster\Transformers\PosterCategoryAsSalesboxCategory;
 use App\Salesbox\Facades\SalesboxStore;
 use App\Salesbox\Models\SalesboxCategory;
@@ -26,8 +27,16 @@ class SyncCategoriesController
             'access_token' => $config['access_token']
         ]);
 
-        $poster_categories = PosterStore::loadCategories();
-        $salesbox_categories = SalesboxStore::loadCategories();
+        $poster_categories = array_filter(PosterStore::loadCategories(), function(PosterCategory $category) {
+            return true;
+            // todo: checkboxes
+            // return in_array($category->getCategoryId(), [31]);
+        });
+        $salesbox_categories = array_filter(SalesboxStore::loadCategories(), function(SalesboxCategory $salesboxCategory) {
+            return true;
+            // todo: checkboxes
+            // return in_array($salesboxCategory->getId(), []);
+        });
         $delete_categories = [];
         $create_categories = [];
         $update_categories = [];

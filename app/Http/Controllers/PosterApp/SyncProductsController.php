@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PosterApp;
 
 use App\Poster\Facades\PosterStore;
+use App\Poster\Models\PosterProduct;
 use App\Poster\Transformers\PosterProductAsSalesboxOffer;
 use App\Poster\Transformers\PosterProductModificationAsSalesboxOffer;
 use App\Salesbox\Facades\SalesboxApi;
@@ -27,8 +28,17 @@ class SyncProductsController
             'access_token' => $config['access_token']
         ]);
 
-        $poster_products = PosterStore::loadProducts();
-        $salesbox_offers = SalesboxStore::loadOffers();
+        $poster_products = array_filter(PosterStore::loadProducts(), function(PosterProduct $product) {
+            return true;
+            // todo: checkboxes
+            // return in_array($product->getProductId(), [437, 438, 439, 440]);
+        });
+
+        $salesbox_offers = array_filter(SalesboxStore::loadOffers(), function(SalesboxOfferV4 $offerV4) {
+            return true;
+            // todo: checkboxes
+            // return in_array($offerV4->getId(), []);
+        });
 
         $update_offers = [];
         $create_offers = [];
@@ -67,6 +77,24 @@ class SyncProductsController
                     }
                 }
             } else if ($poster_product->hasDishModificationGroups()) {
+                $groups = $poster_product->getDishModificationGroups();
+                foreach($groups as $group) {
+                    if($group->isMultipleType()) {
+                        continue;
+                    }
+                    $modifications = $group->getModifications();
+                    if(count($modifications) > 0) {
+                        continue;
+                    }
+                    $offer = SalesboxStore::findOfferByExternalId($poster_product->getProductId());
+                    if ($offer) {
+                        $transformer = new PosterProductAsSalesboxOffer($poster_product);
+                        $update_offers[] = $transformer->updateFrom($offer);
+                    } else {
+                        $transformer = new PosterProductAsSalesboxOffer($poster_product);
+                        $create_offers[] = $transformer->transform();
+                    }
+                }
                 // skip dish with modification groups
             } else {
                 $offer = SalesboxStore::findOfferByExternalId($poster_product->getProductId());

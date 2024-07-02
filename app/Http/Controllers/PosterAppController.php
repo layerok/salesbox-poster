@@ -64,7 +64,33 @@ class PosterAppController
 
         foreach ($posterProducts as $posterProduct) {
             if ($posterProduct->hasDishModificationGroups()) {
-                // skip dish with modification groups
+                $modificationGroups = $posterProduct->getDishModificationGroups();
+
+                foreach($modificationGroups as $group) {
+                    if($group->isMultipleType()) {
+                        continue;
+                    }
+
+                    $modifications = $group->getModifications();
+
+                    if(count($modifications) > 0) {
+                        continue;
+                    }
+
+                    // treat like a normal product without any modifications
+                    $products[] = [
+                        'name' => $posterProduct->getProductName(),
+                        'poster' => [
+                            'id' => $posterProduct->getProductId(),
+                            'created' => true,
+                        ],
+                        'salesbox' => [
+                            'created' => !!SalesboxStore::findOfferByExternalId($posterProduct->getProductId())
+                        ]
+                    ];
+                }
+
+                // skip dish with 'multiple' modification groups
                 continue;
             }
 
@@ -73,6 +99,7 @@ class PosterAppController
                     $products[] = [
                         'name' => $posterProduct->getProductName() . ', ' . $modification->getModificatorName(),
                         'poster' => [
+                            'id' => $posterProduct->getProductId(),
                             'created' => true,
                         ],
                         'salesbox' => [
@@ -87,6 +114,7 @@ class PosterAppController
             $products[] = [
                 'name' => $posterProduct->getProductName(),
                 'poster' => [
+                    'id' => $posterProduct->getProductId(),
                     'created' => true,
                 ],
                 'salesbox' => [
@@ -108,6 +136,7 @@ class PosterAppController
                     $products[] = [
                         'name' => $salesboxOffer->getAttributes('name') . ' модифікація#' . $salesboxOffer->getModifierId(),
                         'poster' => [
+                            'id' => $posterProduct->getProductId(),
                             'created' => !!$modification,
                         ],
                         'salesbox' => [
@@ -119,6 +148,7 @@ class PosterAppController
                     $products[] = [
                         'name' => $posterProduct ? $posterProduct->getProductName() : $salesboxOffer->getAttributes('name'),
                         'poster' => [
+                            'id' => $posterProduct->getProductId(),
                             'created' => !!$posterProduct,
                         ],
                         'salesbox' => [
@@ -133,6 +163,7 @@ class PosterAppController
             $products[] = [
                 'name' => $salesboxOffer->getAttributes('name'),
                 'poster' => [
+                    'id' => null,
                     'created' => false
                 ],
                 'salesbox' => [
@@ -161,9 +192,11 @@ class PosterAppController
                 $categories[] = [
                     'name' => $salesboxCategory->getAttributes('name'),
                     'poster' => [
+                        'id' => $salesboxCategory->getExternalId(),
                         'created' => PosterStore::categoryExists($salesboxCategory->getExternalId())
                     ],
                     'salesbox' => [
+                        'id' => $salesboxCategory->getId(),
                         'created' => true,
                     ],
                 ];
@@ -172,9 +205,11 @@ class PosterAppController
                 $categories[] = [
                     'name' => $salesboxCategory->getAttributes('name'),
                     'poster' => [
+                        'id' => null,
                         'created' => false
                     ],
                     'salesbox' => [
+                        'id' =>  $salesboxCategory->getId(),
                         'created' => true,
                     ],
 
@@ -190,9 +225,11 @@ class PosterAppController
                 $categories[] = [
                     'name' => $posterCategory->getCategoryName(),
                     'poster' => [
+                        'id' => $posterCategory->getCategoryId(),
                         'created' => true,
                     ],
                     'salesbox' => [
+                        'id' => null,
                         'created' => false
                     ],
                 ];

@@ -102,7 +102,9 @@
                 <table id="categoryTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
                     <thead>
                     <tr>
-                        <th width="138" class="ph2 pv1"></th>
+{{--                        <th width="100" class="fw4 ba b--black ph2 pv1 tc">Poster ID</th>--}}
+{{--                        <th width="100" class="fw4 ba b--black ph2 pv1 tc">Salesbox ID</th>--}}
+                        <th width="138" class="fw4 ba b--black ph2 pv1 tc">Name</th>
                         <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
                         <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
                     </tr>
@@ -110,6 +112,8 @@
                     <tbody>
                     @foreach($categories as $category)
                         <tr>
+{{--                            <td class="ba b--black pv1 ph2">{{$category['poster']['id']}}</td>--}}
+{{--                            <td class="ba b--black pv1 ph2">{{$category['salesbox']['id']}}</td>--}}
                             <td class="ba b--black ph2 pv1">
                                 <span style="width: 121px" class="truncate dib"
                                       title="{{ $category['name'] }}"> {{ $category['name'] }} </span>
@@ -180,7 +184,8 @@
                 <table id="productTable" style="border-collapse: collapse" class="f7 ba b--black mt3">
                     <thead>
                     <tr>
-                        <th width="138" class="ph2 pv1"></th>
+{{--                        <th width="100" class="fw4 ba b--black ph2 pv1 tc">Poster ID</th>--}}
+                        <th width="138" class="fw4 ba b--black ph2 pv1 tc">Name</th>
                         <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Salesbox?</th>
                         <th width="79" class="fw4 ba b--black ph2 pv1 tc">Існує в Poster?</th>
                     </tr>
@@ -188,6 +193,7 @@
                     <tbody>
                     @foreach($products as $product)
                         <tr>
+{{--                            <td class="ba b--black pv1 ph2">{{$product['poster']['id']}}</td>--}}
                             <td class="ba b--black pv1 ph2">
                                 <span style="width: 121px" class="truncate dib"
                                       title="{{ $product['name'] }}">{{ $product['name'] }}</span>
@@ -262,7 +268,7 @@
      window.addEventListener('load', function () {
          const $categoryTable = $('#categoryTable');
          $categoryTable.DataTable({
-             searching: false,
+             searching: true,
              ordering: false,
              paging: true,
              autoWidth: false,
@@ -272,7 +278,7 @@
 
          const $productTable = $('#productTable');
          $productTable.DataTable({
-             searching: false,
+             searching: true,
              ordering: false,
              paging: true,
              autoWidth: false,
