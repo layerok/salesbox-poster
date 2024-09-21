@@ -26,3 +26,7 @@ Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterAp
 
 Route::post('/poster-app/{code}/sync-products', \App\Http\Controllers\PosterApp\SyncProductsController::class)
     ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
+
+Route::post('/poster-webhook', function() {
+    return response('ok');
+});

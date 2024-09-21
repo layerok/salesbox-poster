@@ -1,8 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+
+function environment(string $string)
+{
+
+}
 
 return [
 
@@ -37,7 +43,10 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single', 'telegram'],
+            'channels' => array_merge(
+                ['single',],
+                env('APP_ENV') === 'production' ? ['telegram']: []
+            ),
             'ignore_exceptions' => false,
         ],
 

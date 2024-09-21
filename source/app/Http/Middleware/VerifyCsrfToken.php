@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'poster-app/*'
+        'poster-app/*',
+        'poster-webhook'
     ];
 }
