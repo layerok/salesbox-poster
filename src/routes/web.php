@@ -1,7 +1,11 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PosterAppController;
+use App\Http\Controllers\PosterApp\SyncCategoriesController;
+use App\Http\Controllers\PosterApp\SyncProductsController;
+use App\Http\Controllers\PosterWebhookController;
+use App\Http\Middleware\EnsureCodeIsValid;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,15 +22,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/poster-app/{code}', \App\Http\Controllers\PosterAppController::class)
-    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
+Route::get('/poster-app/{code}', PosterAppController::class)
+    ->middleware(EnsureCodeIsValid::class);
 
-Route::post('/poster-app/{code}/sync-categories', \App\Http\Controllers\PosterApp\SyncCategoriesController::class)
-    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
+Route::post('/poster-app/{code}/sync-categories', SyncCategoriesController::class)
+    ->middleware(EnsureCodeIsValid::class);
 
-Route::post('/poster-app/{code}/sync-products', \App\Http\Controllers\PosterApp\SyncProductsController::class)
-    ->middleware(\App\Http\Middleware\EnsureCodeIsValid::class);
+Route::post('/poster-app/{code}/sync-products', SyncProductsController::class)
+    ->middleware(EnsureCodeIsValid::class);
 
-Route::post('/poster-webhook', function() {
-    return response('ok');
-});
+Route::post('/poster-webhook', PosterWebhookController::class);

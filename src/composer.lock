@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9788ce1224e6a80bb8c233eea4e2d61",
+    "content-hash": "08affdd86b97c88f1b965a4351f95604",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1371,6 +1371,54 @@
                 "source": "https://github.com/laravel/tinker/tree/v2.8.1"
             },
             "time": "2023-02-15T16:40:09+00:00"
+        },
+        {
+            "name": "layerok/salesbox-api",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/layerok/salesbox-api.git",
+                "reference": "783c7ad47b8816fa93664bb97761e87b4f80eac7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/layerok/salesbox-api/zipball/783c7ad47b8816fa93664bb97761e87b4f80eac7",
+                "reference": "783c7ad47b8816fa93664bb97761e87b4f80eac7",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0.1",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^v1.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Layerok\\SalesboxApi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Volodymyr Rudomanenko",
+                    "email": "rudomanenkovladimir@gmail.com"
+                }
+            ],
+            "description": "Salesbox API",
+            "keywords": [
+                "Salesbox",
+                "api"
+            ],
+            "support": {
+                "issues": "https://github.com/layerok/salesbox-api/issues",
+                "source": "https://github.com/layerok/salesbox-api/tree/v1.0.0"
+            },
+            "time": "2024-09-28T20:20:41+00:00"
         },
         {
             "name": "league/commonmark",
@@ -7751,8 +7799,9 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3"
+        "php": "^7.3",
+        "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.6.0"
 }

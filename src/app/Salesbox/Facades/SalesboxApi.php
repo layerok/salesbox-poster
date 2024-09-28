@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @method static HandlerStack getGuzzleHandler()
  *
- * @see  \App\Salesbox\SalesboxApi;
+ * @see \Layerok\SalesboxApi\SalesboxApi;
  */
 
 class SalesboxApi extends Facade {

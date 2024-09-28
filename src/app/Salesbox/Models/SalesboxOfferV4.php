@@ -2,8 +2,6 @@
 
 namespace App\Salesbox\Models;
 
-use App\Salesbox\Stores\SalesboxStore;
-
 class SalesboxOfferV4 extends SalesboxModel
 {
     public function __construct($attributes)

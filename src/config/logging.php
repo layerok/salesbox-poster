@@ -1,14 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\App;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
-
-function environment(string $string)
-{
-
-}
 
 return [
 

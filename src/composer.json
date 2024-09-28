@@ -9,12 +9,14 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "ext-json": "*",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "kagatan/monolog-telegram": "^1.4",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
+        "layerok/salesbox-api": "^1.0",
         "poster/api": "^1.0"
     },
     "require-dev": {
@@ -58,6 +60,7 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ]
+        ],
+        "update-no-limit": "COMPOSER_MEMORY_LIMIT=-1 composer update"
     }
 }

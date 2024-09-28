@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getAccessToken(array $params = [])
  * @method static array getOffers(array $params = [], array $guzzleOptions = [])
  *
- * @see  \App\Salesbox\SalesboxApiV4;
+ * @see  \Layerok\SalesboxApi\SalesboxApiV4;
  */
 
 class SalesboxApiV4 extends Facade {

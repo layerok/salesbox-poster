@@ -4,6 +4,8 @@ namespace App\Salesbox;
 
 use App\Salesbox\Stores\SalesboxStore;
 use Illuminate\Support\ServiceProvider;
+use Layerok\SalesboxApi\SalesboxApi;
+use Layerok\SalesboxApi\SalesboxApiV4;
 
 class SalesboxServiceProvider extends ServiceProvider
 {
