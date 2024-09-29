@@ -71,10 +71,12 @@ class PosterWebhookController
             return;
         }
 
+        $name = $posterProduct->product_name;
+
         $names = [
             [
                 'lang' => 'uk',
-                'name' => $posterProduct->product_name
+                'name' => $name
             ]
         ];
 
@@ -91,18 +93,19 @@ class PosterWebhookController
         }
 
 
-        $descriptionUk = collect($posterProduct->ingredients ?? [])->map(function($ingredient) {
+        $description = collect($posterProduct->ingredients ?? [])->map(function($ingredient) {
             return $ingredient->ingredient_name;
         })->join(', ');
 
         $descriptions = [
             [
                 'lang' => 'uk',
-                'description' => $descriptionUk
+                'description' => $description
             ]
         ];
 
         $price = (int)substr($posterProduct->price->{'1'}, 0, -2);
+        $id = $posterProduct->product_id;
 
         $offer = [
             'externalId' => $posterProduct->product_id,
@@ -116,6 +119,8 @@ class PosterWebhookController
         SalesboxApi::createManyOffers([
             'offers' => [$offer]
         ]);
+
+        Log::info('New product added [' . $name . ']#' . $id . ' to salesbox. It needs moderation');
     }
 
     public function updateProduct($postData)
