@@ -15,7 +15,7 @@ class PosterWebhookController
 {
     public function __invoke(Request $request) {
         try {
-            PosterApi::init(config('poster_app_3666'));
+            PosterApi::init(config('poster'));
 
             if(!PosterApi::auth()->verifyWebHook($request->getContent())) {
                 return response('Not authorized',200);
