@@ -82,8 +82,8 @@ class PosterWebhookController
 
         if($posterProduct->photo_origin) {
             $photos[] = [
-                'url' => config('poster_app_3666.url') . (string)$posterProduct->photo_origin,
-                'previewURL' => config('poster_app_3666.url') . (string)$posterProduct->photo,
+                'url' => config('poster.url') . (string)$posterProduct->photo_origin,
+                'previewURL' => config('poster.url') . (string)$posterProduct->photo,
                 'order' => 0,
                 'type' => 'image',
                 'resourceType' => 'image'
