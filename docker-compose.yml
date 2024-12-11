@@ -1,4 +1,5 @@
 version: '3.8'
+name: 'salesbox-poster'
 
 #Docker Networks
 networks:
@@ -16,7 +17,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/nginx/Dockerfile
-    container_name: nginx
     ports:
       - "8080:80"
     volumes:
@@ -34,7 +34,6 @@ services:
   mysql:
     image: mysql:5.7.29
     platform: linux/x86_64
-    container_name: mysql
     restart: unless-stopped
     tty: true
     ports:
@@ -54,7 +53,6 @@ services:
 
   redis:
     image: "redis:alpine"
-    container_name: redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -63,7 +61,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
     environment:
       MYSQL_ROOT_PASSWORD: secret
       PMA_HOST: mysql
@@ -85,7 +82,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/php/Dockerfile
-    container_name: php
     volumes:
       - ./src:/var/www/html:delegated
       # Enable xdebug
@@ -104,7 +100,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/php/composer/Dockerfile
-    container_name: composer
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html
@@ -117,7 +112,6 @@ services:
 
   npm:
     image: node:15.0.1
-    container_name: npm
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html
@@ -127,7 +121,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/php/Dockerfile
-    container_name: artisan
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
